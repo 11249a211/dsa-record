@@ -1,148 +1,158 @@
-
 AIM:
-To implement a Queue using a dynamically allocated array in C and perform the following operations:
-ENQUEUE – Insert an element into the queue
-DEQUEUE – Delete an element from the queue
-DISPLAY – Show all elements of the queue
+To implement a Queue using a Singly Linked List in C and perform basic queue operations such as:
+Enqueue (Insertion)
+Dequeue (Deletion)
+Peek (Front element)
+Display
 ALGORITHM:
-1. Start
-Declare variables front = -1, rear = -1, and queue size.
-Dynamically allocate memory for QUEUE of given size.
-2. ENQUEUE(item)
-If rear == size - 1, the queue is full → print Overflow.
-If queue is empty (front == -1), set front = 0.
-Increment rear.
-Insert item into:
-QUEUE[rear] = item
-Print insertion message.
-3. DEQUEUE()
-If front == -1, queue is empty → print Underflow.
-Store the element at QUEUE[front].
-Increment front.
-Print deleted element.
-If front > rear, reset queue:
-front = rear = -1
-4. DISPLAY()
-If queue is empty (front == -1), print empty.
-Else, print elements from front to rear.
-5. MENU DRIVEN PROGRAM
-Repeat the following until the user selects exit:
-1 → Enqueue
-2 → Dequeue
-3 → Display
-4 → Exit
+1. Enqueue (Insert into Queue)
+Create a new node using create_node().
+If the queue is empty (front == NULL and rear == NULL):
+Set both front and rear to new node.
+Otherwise:
+Link the new node to the current rear->next.
+Update rear to the new node.
+Print success message.
+2. Dequeue (Delete from Queue)
+If front == NULL, the queue is empty → print message and return.
+Store the current front node.
+Move front pointer to front->next.
+If queue becomes empty, set rear = NULL.
+Free the removed node.
+Print deleted value
+3. Peek
+If front == NULL, print "Queue is empty".
+Otherwise, print the value of front->data
+4. Display
+If queue is empty, print "Queue is empty".
+Else traverse from front to rear and print elements.
 PROGRAM:
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 
-int front = -1, rear = -1, size;
-int *QUEUE; // Dynamic array for queue
+// Structure for linked list node
+struct node {
+    int data;
+    struct node *next;
+};
 
-// Function to insert an element into queue
-void enqueue(int item)
-{
-    if (rear == size - 1)  // Check for overflow
-    {
-        printf("Queue Overflow! Cannot insert.\n");
+// Function to create a new node
+struct node* create_node(int data) {
+    struct node *newnode = (struct node*)malloc(sizeof(struct node));
+    if (!newnode) {
+        printf("Memory allocation failed\n");
+        return NULL;
+    }
+    newnode->data = data;
+    newnode->next = NULL;
+    return newnode;
+}
+
+// Enqueue operation (Insert element)
+void enqueue(struct node **front, struct node **rear, int data) {
+    struct node *newnode = create_node(data);
+
+    // If queue is empty
+    if (*rear == NULL) {
+        *front = *rear = newnode;
+    } else {
+        (*rear)->next = newnode;  // Link newnode at end
+        *rear = newnode;          // Update rear
+    }
+    printf("Enqueued %d successfully\n", data);
+}
+
+// Dequeue operation (Delete element)
+void dequeue(struct node **front, struct node **rear) {
+    if (*front == NULL) {
+        printf("Queue is empty! Dequeue not possible\n");
         return;
     }
 
-    if (front == -1)       // First insertion
-        front = 0;
+    struct node *temp = *front;
+    printf("Dequeued %d\n", temp->data);
 
-    rear++;
-    QUEUE[rear] = item;    // Insert item
-    printf("%d inserted into queue.\n", item);
+    *front = (*front)->next;
+
+    // If queue becomes empty
+    if (*front == NULL)
+        *rear = NULL;
+
+    free(temp);
 }
 
-// Function to delete an element from queue
-void dequeue()
-{
-    if (front == -1)       // Queue empty
-    {
-        printf("Queue Underflow! Nothing to delete.\n");
+// Peek: Show front element
+void peek(struct node *front) {
+    if (front == NULL) {
+        printf("Queue is empty\n");
+    } else {
+        printf("Front element: %d\n", front->data);
+    }
+}
+
+// Display queue elements
+void display(struct node *front) {
+    if (front == NULL) {
+        printf("Queue is empty\n");
         return;
     }
 
-    int temp = QUEUE[front];
-    front++;
-    printf("Deleted element: %d\n", temp);
-
-    // If queue becomes empty, reset indices
-    if (front > rear)
-        front = rear = -1;
+    struct node *temp = front;
+    printf("\nQueue (front to rear): ");
+    while (temp != NULL) {
+        printf("%d -> ", temp->data);
+        temp = temp->next;
+    }
+    printf("NULL\n");
 }
 
-// Function to display queue contents
-void display()
-{
-    if (front == -1)
-    {
-        printf("Queue is empty.\n");
-        return;
-    }
-
-    printf("Queue elements: ");
-    for (int i = front; i <= rear; i++)
-    {
-        printf("%d ", QUEUE[i]);
-    }
-    printf("\n");
-}
-
-int main()
-{
+// Main function with menu-driven interface
+int main() {
+    struct node *front = NULL;
+    struct node *rear = NULL;
     int choice, data;
 
-    printf("Enter size of Queue: ");
-    scanf("%d", &size);
-
-    // Dynamically allocate memory for queue
-    QUEUE = (int *)malloc(size * sizeof(int));
-    if (QUEUE == NULL)
-    {
-        printf("Memory allocation failed!\n");
-        return 0;
-    }
-
-    while (1)
-    {
-        printf("\n--- Queue Menu ---\n");
+    while (1) {
+        printf("\n---- Queue using Singly Linked List ----\n");
         printf("1. Enqueue\n");
         printf("2. Dequeue\n");
-        printf("3. Display\n");
-        printf("4. Exit\n");
+        printf("3. Peek (Front Element)\n");
+        printf("4. Display Queue\n");
+        printf("5. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
-        switch (choice)
-        {
-        case 1:
-            printf("Enter data to insert: ");
-            scanf("%d", &data);
-            enqueue(data);
-            break;
+        switch (choice) {
 
-        case 2:
-            dequeue();
-            break;
+            case 1:
+                printf("Enter value to enqueue: ");
+                scanf("%d", &data);
+                enqueue(&front, &rear, data);
+                break;
 
-        case 3:
-            display();
-            break;
+            case 2:
+                dequeue(&front, &rear);
+                break;
 
-        case 4:
-            printf("Exiting...\n");
-            free(QUEUE); // Free allocated memory
-            exit(0);
+            case 3:
+                peek(front);
+                break;
 
-        default:
-            printf("Invalid choice! Try again.\n");
+            case 4:
+                display(front);
+                break;
+
+            case 5:
+                printf("Exiting...\n");
+                exit(0);
+
+            default:
+                printf("Invalid choice! Try again\n");
         }
     }
 
     return 0;
 }
-RSULT:
-The program successfully implements a Queue using a dynamically allocated array.
-It performs Enqueue, Dequeue, and Display operations correctly and handles Overflow and Underflow conditions.
+RESULT:
+The Queue using Singly Linked List was successfully implemented.
+All queue operations—enqueue, dequeue, peek, and display—were executed correctly.
