@@ -1,133 +1,153 @@
 AIM:
-To implement a Stack using a Singly Linked List in C, including operations:
-PUSH (Insert element)
-POP (Delete top element)
-DISPLAY (Show stack elements)
+To implement a Stack data structure using an array in C and perform the following operations:
+Push – Insert an element into the stack
+Pop – Remove the top element
+Peek – Display the top element
+Display – Show all elements in the stack
 ALGORITHM:
-1. Initialize
-Define a Node structure with:
-int data
-struct Node* next
-Set Top = NULL (empty stack).
-2. CreateNewNode(x)
-Allocate memory for a new node.
-Assign:
-node->data = x
-node->next = NULL
-Return the node.
-3. PUSH(x)
-Create a new node.
-If memory allocation fails → print Stack Overflow.
-Else:
-Link new node to current Top:
-newNode->next = Top
-Update Top:
-Top = newNode
-Print “Element pushed”.
-4. POP()
-If Top == NULL, stack is empty → print Stack Underflow.
-Else:
-Store Top->data in popped.
-Move Top to the next node:
-Top = Top->next
-Free the removed node.
-Return popped value.
-5. DISPLAY
-If Top == NULL, print "Stack is empty".
-Else:
-Traverse from Top to NULL, printing each node’s data.
-6. MENU LOOP
-Repeat operations until user selects Exit
+1. PUSH(x)
+Step 1: If top >= MAX – 1, stack overflow → print message
+Step 2: Else increment top
+Step 3: Insert x at stack[top]
+Step 4: End
+2. POP()
+Step 1: If top == -1, stack underflow → print message
+Step 2: Else store element in stack[top]
+Step 3: Decrement top
+Step 4: Return deleted element
+Step 5: End
+3. PEEK()
+Step 1: If top == -1, print “Stack is empty”
+Step 2: Otherwise return stack[top]
+Step 3: End
+4. DISPLAY()
+Step 1: If stack is empty, print message
+Step 2: Otherwise print all elements from top to 0
+Step 3: End
 PROGRAM:
 #include <stdio.h>
-#include <stdlib.h>
+#define MAX 100  // Maximum size of the stack
 
-// Node structure for stack (linked list)
-struct Node {
-    int data;
-    struct Node *next;
-};
+int stack[MAX];
+int top = -1;  // Stack is initially empty
 
-// Pointer to top of stack
-struct Node* Top = NULL;
-
-// Function to create new node
-struct Node* CreateNewNode(int x) {
-    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
-    if(newNode != NULL) {
-        newNode->data = x;
-        newNode->next = NULL;
+// Push operation
+void push(int x)
+{
+    if (top >= MAX - 1)  // Check if the stack is full
+    {
+        printf("Stack overflow\n");
     }
-    return newNode;
+    else
+    {
+        top++;
+        stack[top] = x;  // Insert element
+    }
 }
 
-// PUSH operation
-void push(int x) {
-    struct Node* NewNode = CreateNewNode(x);
-    if(NewNode == NULL) {
-        printf("Stack Overflow\n");
-        return;
+// Pop operation
+int pop()
+{
+    if (top < 0)  // Check if stack is empty
+    {
+        printf("Stack underflow\n");
+        return -1;  // Error value
     }
-    NewNode->next = Top; // Link new node with previous top
-    Top = NewNode;       // Update top
-    printf("Element pushed onto stack\n");
+    else
+    {
+        int value = stack[top];
+        top--;  // Remove top
+        return value;
+    }
 }
 
-// POP operation
-int pop() {
-    if(Top == NULL) {
-        printf("Stack Underflow\n");
+// Peek operation
+int peek()
+{
+    if (top < 0)
+    {
+        printf("Stack is empty\n");
         return -1;
     }
-    int popped = Top->data;
-    struct Node* temp = Top;
-    Top = Top->next;   // Move top to next node
-    free(temp);        // Delete old top
-    return popped;
+    else
+    {
+        return stack[top];
+    }
 }
 
-// Display the stack
-void display() {
-    if(Top == NULL) {
+// Check if stack is empty
+int empty()
+{
+    return top == -1;
+}
+
+// Display stack contents
+void display()
+{
+    if (empty())
+    {
         printf("Stack is empty\n");
-        return;
     }
-    struct Node* t = Top;
-    printf("Stack elements:\n");
-    while(t != NULL) {
-        printf("%d\n", t->data);
-        t = t->next;
+    else
+    {
+        printf("Stack elements: ");
+        for (int i = top; i >= 0; i--)
+            printf("%d ", stack[i]);
+        printf("\n");
     }
 }
 
-int main() {
+int main()
+{
     int choice, value;
-    while(1) {
-        printf("\n1 Push\n2 Pop\n3 Display\n4 Exit\n");
+    int n;
+
+    printf("Enter total size of stack (max %d): ", MAX);
+    scanf("%d", &n);
+
+    if (n > MAX)
+    {
+        printf("Size exceeds limit\n");
+        return 0;
+    }
+
+    while (1)
+    {
+        printf("\n1. Push\n2. Pop\n3. Peek\n4. Display\n5. Exit\nEnter your choice: ");
         scanf("%d", &choice);
 
-        if(choice == 1) {
-            printf("Enter value: ");
-            scanf("%d", &value);
-            push(value);
-        } 
-        else if(choice == 2) {
-            int v = pop();
-            if(v != -1)
-                printf("Popped: %d\n", v);
-        }
-        else if(choice == 3) {
-            display();
-        }
-        else if(choice == 4) {
-            break;
-        }
-        else {
-            printf("Invalid choice\n");
+        switch (choice)
+        {
+            case 1:
+                printf("Enter value to push: ");
+                scanf("%d", &value);
+                push(value);
+                break;
+
+            case 2:
+                value = pop();
+                if (value != -1)
+                    printf("Popped value: %d\n", value);
+                break;
+
+            case 3:
+                value = peek();
+                if (value != -1)
+                    printf("Top value: %d\n", value);
+                break;
+
+            case 4:
+                display();
+                break;
+
+            case 5:
+                return 0;
+
+            default:
+                printf("Invalid choice\n");
         }
     }
-    return 0;
 }
 RESULT:
-The program successfully implements a stack using a linked list.
-It performs the operations PUSH, POP, and DISPLAY correctly and handles overflow/underflow conditions appropriately.
+The program to implement Stack operations using an array was successfully executed.
+The user was able to perform Push, Pop, Peek, and Display operations through a menu-driven interface.
