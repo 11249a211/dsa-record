@@ -68,3 +68,4 @@ int main() {
 RESULT:
 The Binary Search algorithm is successfully implemented.
 The program efficiently searches a sorted array and correctly displays whether the element is found or not, along with its position.
+
